@@ -1,165 +1,111 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Google Calendar API Quickstart</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" type="text/css" href="style.css" />
-  </head>
-  <body>
-    <p>Google Calendar API Quickstart</p>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Resume</title>
+</head>
+<body>
+    <h1>Marco Chen</h1>
+    <img src="head-photo.jpeg" height="200" alt="head photo">
+    <h2>Summary</h2>
+    <p>College student that seek work opportunities to further expand my current capabilities.</p>
+    <hr />
 
-    <div id="calendar"></div>
-    <script src="script.js"></script>
+    <h2>Education</h2>
+    <p>
+        University of California Irvine, Irvine, CA 92697 — BS<br />
+        September 2022 - 2026<br />
+    </p>
 
+    <p>
+        Mission High School, 3750 18th St, San Francisco, CA 94114 — High School Diploma<br />
+        August 2018 - June 2022<br />
+        <ul>
+            <li>4.20 GPA</li>
+            <li>Summer Search program</li>
+            <li>ScholarMatch</li>
+        </ul>
+    </p>
+    <hr />
+    <h2>Experience</h2>
+    <p>
+        Chipotle Mexican Grill, San Francisco Metreon — Crew<br />
+        Jul 2022 - Aug 2022 San Francisco, CA<br />
+        <ul>
+        <li>Experience as a Cashier</li>
+        <li>Assisted with prepping different ingredients</li>
+        <li>Working with other co-workers in a fast paced environment</li>
+        <li>Maintained a clean and healthy working space</li>
+        </ul>
+    </p>
 
-    <!--Add buttons to initiate auth sequence and sign out-->
-    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
-    <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
+    <p>
+        Mayor’s Youth Employment and Education Program (MYEEP), San Francisco, CA — Intern<br />
+        June 2021- August 2021<br />
+        <ul>
+        <li>Engaged in educational workshops about money management, self care, communication, professionalism, etc.</li>
+        <li>Completed projects with peers using Google Suites.</li>
+        <li>Participated in meetings with professionals explaining their path to success.</li>
+        </ul>
+    </p>
 
-    <pre id="content" style="white-space: pre-wrap;"></pre>
+    <p>
+        San Francisco YouthWorks, San Francisco, CA — Summer Intern<br />
+        June 2020 - August 2020<br />
+        <ul>
+            <li>Created projects about social and environmental problems</li>
+            <li>Participated in workshops about Resume building, Career exploration, Creating LinkedIn profile, Public speaking, and communication</li>
+            <li>Participated in meetings about work life/balance and Money management</li>
+        </ul>
+    </p>
 
-    <script type="text/javascript">
-      /* exported gapiLoaded */
-      /* exported gisLoaded */
-      /* exported handleAuthClick */
-      /* exported handleSignoutClick */
+    <p>
+        Boys & Girls Club of SF, 450 Gurerro — Leader In Training<br />
+        September 2019 - April 2020<br />
+        <ul>
+        <li>Help serve snack</li>
+        <li>Assist other staff members</li>
+        <li>Help supervise kids </li>
+        <li>Interact with others</li>
+        </ul>
+    </p>
 
-      // TODO(developer): Set to client ID and API key from the Developer Console
-      const CLIENT_ID = '951115827710-dno0jc4euv9oje1ktckug8psi3intid4.apps.googleusercontent.com';
-      const API_KEY = 'AIzaSyBElyKLtaZZIFHpBQa7QuzAjBQZ057Zg2A';
-
-      // Discovery doc URL for APIs used by the quickstart
-      const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
-
-      // Authorization scopes required by the API; multiple scopes can be
-      // included, separated by spaces.
-      const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
-
-      let tokenClient;
-      let gapiInited = false;
-      let gisInited = false;
-
-      document.getElementById('authorize_button').style.visibility = 'hidden';
-      document.getElementById('signout_button').style.visibility = 'hidden';
-
-      /**
-       * Callback after api.js is loaded.
-       */
-      function gapiLoaded() {
-        gapi.load('client', initializeGapiClient);
-      }
-
-      /**
-       * Callback after the API client is loaded. Loads the
-       * discovery doc to initialize the API.
-       */
-      async function initializeGapiClient() {
-        await gapi.client.init({
-          apiKey: API_KEY,
-          discoveryDocs: [DISCOVERY_DOC],
-        });
-        gapiInited = true;
-        maybeEnableButtons();
-      }
-
-      /**
-       * Callback after Google Identity Services are loaded.
-       */
-      function gisLoaded() {
-        tokenClient = google.accounts.oauth2.initTokenClient({
-          client_id: CLIENT_ID,
-          scope: SCOPES,
-          callback: '', // defined later
-        });
-        gisInited = true;
-        maybeEnableButtons();
-      }
-
-      /**
-       * Enables user interaction after all libraries are loaded.
-       */
-      function maybeEnableButtons() {
-        if (gapiInited && gisInited) {
-          document.getElementById('authorize_button').style.visibility = 'visible';
-        }
-      }
-
-      /**
-       *  Sign in the user upon button click.
-       */
-      function handleAuthClick() {
-        tokenClient.callback = async (resp) => {
-          if (resp.error !== undefined) {
-            throw (resp);
-          }
-          document.getElementById('signout_button').style.visibility = 'visible';
-          document.getElementById('authorize_button').innerText = 'Refresh';
-          await listUpcomingEvents();
-        };
-
-        if (gapi.client.getToken() === null) {
-          // Prompt the user to select a Google Account and ask for consent to share their data
-          // when establishing a new session.
-          tokenClient.requestAccessToken({prompt: 'consent'});
-        } else {
-          // Skip display of account chooser and consent dialog for an existing session.
-          tokenClient.requestAccessToken({prompt: ''});
-        }
-      }
-
-      /**
-       *  Sign out the user upon button click.
-       */
-      function handleSignoutClick() {
-        const token = gapi.client.getToken();
-        if (token !== null) {
-          google.accounts.oauth2.revoke(token.access_token);
-          gapi.client.setToken('');
-          document.getElementById('content').innerText = '';
-          document.getElementById('authorize_button').innerText = 'Authorize';
-          document.getElementById('signout_button').style.visibility = 'hidden';
-        }
-      }
-
-      /**
-       * Print the summary and start datetime/date of the next ten events in
-       * the authorized user's calendar. If no events are found an
-       * appropriate message is printed.
-       */
-       async function listUpcomingEvents() {
-    let response;
-    try {
-        const request = {
-            'calendarId': 'primary',
-            'timeMin': (new Date()).toISOString(),
-            'showDeleted': false,
-            'singleEvents': true,
-            'maxResults': 10,
-            'orderBy': 'startTime',
-        };
-        response = await gapi.client.calendar.events.list(request);
-    } catch (err) {
-        document.getElementById('content').innerText = err.message;
-        return;
-    }
-
-    const events = response.result.items;
-    if (!events || events.length == 0) {
-        document.getElementById('content').innerText = 'No events found.';
-        return;
-    }
-
-    // Update: Convert times to local timezone and display events
-    const output = events.reduce((str, event) => {
-        const dateTime = event.start.dateTime || event.start.date; // Handle all-day events
-        const localTime = new Date(dateTime).toLocaleString(); // Convert to local timezone
-        return `${str}${event.summary} (${localTime})\n`;
-    }, 'Events:\n');
-    document.getElementById('content').innerText = output;
-}
-
-    </script>
-    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
-    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
-  </body>
+    <p>
+        Boys & Girls Club of SF, 450 Gurerro — Teen Intern<br />
+        June 2019 - august 2019<br />
+        <ul>
+        <li>Help keep the yard clean after lunch</li>
+        <li>Aided  with  compost & monitoring </li>
+        <li>Lead activities with the kids</li>
+        <li>Assisted  in the office</li>
+        <li>Help serve breakfast/lunch</li>
+        </ul>
+    </p>
+    <hr />
+    <h2>Skills</h2>
+        <ul>
+            <li>Decision making</li>
+            <li>Organizational Skills</li>
+            <li>Time management</li>
+            <li>Responsible</li>
+        </ul>
+    <hr />
+    <h2>Languages</h2>
+        <ul>
+            <li>English</li>
+            <li>Chinese</li>
+        </ul>
+    <hr />
+    <h2>Other</h2>
+    <ul>
+        <li>
+            <a href="contact.html">Contact Me</a>
+        </li>
+        <li>
+            <a href="hobbie.html">My Hobbies</a>
+        </li>
+    </ul>
+    <footer>© Marco Chen.All Rights Reserved.</footer>
+</body>
 </html>
